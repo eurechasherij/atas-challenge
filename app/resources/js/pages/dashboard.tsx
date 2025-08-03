@@ -31,7 +31,7 @@ const Dashboard = ({ org, invoices = [], contacts = [], bankAccounts = [] }: Das
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="space-y-4 p-6">
-                <h1 className="text-xl font-bold">Atas Challenge</h1>
+                <h1 className="text-xl font-bold">Xero Dashboard</h1>
 
                 {org ? (
                     <div className="space-y-4">
