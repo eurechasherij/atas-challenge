@@ -14,9 +14,12 @@ Route::get('/', function () {
 //     })->name('dashboard');
 // });
 
+
+// Xero login route (overrides default login)
+Route::get('/login', [XeroController::class, 'redirectToXero'])->name('login');
+Route::get('/xero/callback', [XeroController::class, 'handleCallback']);
+
 Route::middleware('auth')->group(function () {
-    Route::get('/xero/login', [XeroController::class, 'redirectToXero']);
-    Route::get('/xero/callback', [XeroController::class, 'handleCallback']);
     Route::get('/dashboard', [XeroController::class, 'dashboard'])->name('dashboard');
 });
 

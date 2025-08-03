@@ -20,8 +20,8 @@ class TokenManager
             $response = Http::asForm()->post('https://identity.xero.com/connect/token', [
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $token->refresh_token,
-                'client_id' => env('XERO_CLIENT_ID'),
-                'client_secret' => env('XERO_CLIENT_SECRET'),
+                'client_id' => config('xero.client_id'),
+                'client_secret' => config('xero.client_secret'),
             ]);
 
             $data = $response->json();
