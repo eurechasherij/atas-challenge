@@ -45,4 +45,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function xeroToken()
+    {
+        return $this->hasOne(XeroToken::class);
+    }
 }

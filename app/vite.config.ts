@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import fs from 'fs'
+import path from 'path'
 
 export default defineConfig({
     plugins: [
@@ -14,6 +16,19 @@ export default defineConfig({
         react(),
         tailwindcss(),
     ],
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        https: {
+            key: fs.readFileSync(path.resolve(__dirname, 'cert/atas-challenge.lndo.site-key.pem')),
+            cert: fs.readFileSync(path.resolve(__dirname, 'cert/atas-challenge.lndo.site.pem')),
+        },
+        cors: true,
+        hmr: {
+            protocol: 'wss',
+            host: 'atas-challenge.lndo.site',
+        },
+    },
     esbuild: {
         jsx: 'automatic',
     },
