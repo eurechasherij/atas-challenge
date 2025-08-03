@@ -1,0 +1,15 @@
+name: atas-challenge
+recipe: laravel
+config:
+  webroot: app/public
+services:
+  node:
+    type: php
+    build_as_root:
+      - curl -sL https://deb.nodesource.com/setup_22.x | bash -
+      - apt-get install -y nodejs
+tooling:
+  node:
+    service: node
+  npm:
+    service: node
