@@ -26,11 +26,10 @@ lando artisan key:generate
 
 ### 2. Create Self-Signed SSL Certs for Vite (HMR via HTTPS)
 
-Vite requires HTTPS to avoid CORS/OAuth issues with Xero in development. Run this once:
+Vite requires HTTPS to avoid CORS/OAuth issues with Xero in development. Run this once or use the current certs:
 
 ```bash
-mkdir -p ./cert
-openssl req -x509 -nodes -newkey rsa:2048 -keyout cert/localhost.key -out cert/localhost.crt -days 365 -subj "/CN=localhost"
+openssl req -x509 -nodes -newkey rsa:2048 -keyout app/cert/localhost.key -out app/cert/localhost.crt -days 365 -subj "/CN=localhost"
 ```
 
 Then edit `vite.config.js` to use the cert:
@@ -58,7 +57,7 @@ Update these in `.env`:
 XERO_CLIENT_ID=...
 XERO_CLIENT_SECRET=...
 XERO_REDIRECT_URI=https://localhost/oauth/xero/callback
-XERO_SCOPES
+XERO_SCOPES=
 ```
 
 ---
