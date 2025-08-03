@@ -2,14 +2,41 @@
 
 namespace App\Services\Xero\Resources;
 
+use App\Services\Xero\TokenManager;
 use App\Services\Xero\XeroClient;
 use Throwable;
 use XeroAPI\XeroPHP\Models\Accounting\Account;
 
+
 class BankAccountService
 {
-    public function get($user, $token): array
+    /**
+     * @var TokenManager
+     */
+    protected TokenManager $tokens;
+
+    /**
+     * BankAccountService constructor.
+     * @param TokenManager $tokens
+     */
+    public function __construct(TokenManager $tokens)
     {
+        $this->tokens = $tokens;
+    }
+
+    /**
+     * Fetch a list of bank accounts from Xero for the given user.
+     * Uses the TokenManager to get a valid token for the user.
+     *
+     * @param \App\Models\User $user The user making the request
+     * @return array An array of XeroAPI\XeroPHP\Models\Accounting\Account
+     */
+    public function get($user): array
+    {
+        $token = $this->tokens->getValidTokenFor($user);
+        if (!$token) {
+            return [];
+        }
         $client = new XeroClient($token->access_token);
         $api = $client->accounting;
 
@@ -35,6 +62,10 @@ class BankAccountService
         return $accounts;
     }
 
+    // workaround for missing balance API in v10
+    // fetches bank balances from the Bank Summary report
+    // this is not ideal but necessary until Xero provides a direct balance endpoint
+    // note: this will only work if the user has access to the Bank Summary report
     protected function getBankBalances($api, $tenantId): array
     {
         $balances = [];

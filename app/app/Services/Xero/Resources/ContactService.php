@@ -2,23 +2,41 @@
 
 namespace App\Services\Xero\Resources;
 
+use App\Services\Xero\TokenManager;
 use App\Services\Xero\XeroClient;
 use Throwable;
-use XeroAPI\XeroPHP\Models\Accounting\Contact;
+
 
 class ContactService
 {
     /**
-     * Fetch a list of contacts from Xero for the given user and token.
+     * @var TokenManager
+     */
+    protected TokenManager $tokens;
+
+    /**
+     * ContactService constructor.
+     * @param TokenManager $tokens
+     */
+    public function __construct(TokenManager $tokens)
+    {
+        $this->tokens = $tokens;
+    }
+
+    /**
+     * Fetch a list of contacts from Xero for the given user.
+     * Uses the TokenManager to get a valid token for the user.
      *
      * @param \App\Models\User $user The user making the request
-     * @param object $token The token object containing access_token and tenant_id
      * @param int $limit The maximum number of contacts to return
      * @return array An array of XeroAPI\XeroPHP\Models\Accounting\Contact
      */
-    public function get($user, $token, $limit = 5): array
+    public function get($user, $limit = 5): array
     {
-        // Initialize Xero accounting API client
+        $token = $this->tokens->getValidTokenFor($user);
+        if (!$token) {
+            return [];
+        }
         $client = new XeroClient($token->access_token);
         $api = $client->accounting;
 

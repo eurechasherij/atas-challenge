@@ -2,14 +2,42 @@
 
 namespace App\Services\Xero\Resources;
 
+use App\Services\Xero\TokenManager;
 use App\Services\Xero\XeroClient;
 use Throwable;
 use XeroAPI\XeroPHP\Models\Accounting\Invoice;
 
+
 class InvoiceService
 {
-    public function get($user, $token, $limit = 5)
+    /**
+     * @var TokenManager
+     */
+    protected TokenManager $tokens;
+
+    /**
+     * InvoiceService constructor.
+     * @param TokenManager $tokens
+     */
+    public function __construct(TokenManager $tokens)
     {
+        $this->tokens = $tokens;
+    }
+
+    /**
+     * Fetch a list of invoices from Xero for the given user.
+     * Uses the TokenManager to get a valid token for the user.
+     *
+     * @param \App\Models\User $user The user making the request
+     * @param int $limit The maximum number of invoices to return
+     * @return array An array of XeroAPI\XeroPHP\Models\Accounting\Invoice
+     */
+    public function get($user, $limit = 5): array
+    {
+        $token = $this->tokens->getValidTokenFor($user);
+        if (!$token) {
+            return [];
+        }
         $client = new XeroClient($token->access_token);
         $api = $client->accounting;
 
@@ -22,14 +50,14 @@ class InvoiceService
                 null,                 // iDs
                 null,                 // invoiceNumbers
                 null,                 // contactIDs
-                [Invoice::STATUS_AUTHORISED, Invoice::STATUS_DRAFT, Invoice::STATUS_PAID, INVOICE::STATUS_SUBMITTED], // statuses — ← this is often required
+                [Invoice::STATUS_AUTHORISED, Invoice::STATUS_DRAFT, Invoice::STATUS_PAID, Invoice::STATUS_SUBMITTED],
                 1,                    // page
-                false,                 // includeArchived
+                false,                // includeArchived
                 false,                // createdByMyApp
-                null,                    // unitdp
+                null,                 // unitdp
                 false,                // summaryOnly
-                5,                   // pageSize
-                null                  // searchTermu
+                5,                    // pageSize
+                null                  // searchTerm
             );
             return array_slice($response?->getInvoices() ?? [], 0, $limit);
         } catch (Throwable $e) {

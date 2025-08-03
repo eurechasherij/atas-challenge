@@ -11,7 +11,6 @@ use App\Services\Xero\Resources\OrganisationService;
 use App\Services\Xero\Resources\InvoiceService;
 use App\Services\Xero\Resources\ContactService;
 use App\Services\Xero\Resources\BankAccountService;
-use Throwable;
 
 class DataSyncService
 {
