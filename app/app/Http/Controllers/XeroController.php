@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\XeroBankAccount;
+use App\Models\XeroContact;
+use App\Models\XeroInvoice;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Http;
@@ -105,7 +108,7 @@ class XeroController extends Controller
         ] : null;
 
         // Fetch latest 5 invoices, 5 contacts, all bank accounts
-        $invoices = \App\Models\XeroInvoice::where('user_id', $user->id)
+        $invoices = XeroInvoice::where('user_id', $user->id)
             ->orderByDesc('date')
             ->limit(5)
             ->get(['number', 'date', 'amount', 'status'])
@@ -118,7 +121,7 @@ class XeroController extends Controller
                 ];
             });
 
-        $contacts = \App\Models\XeroContact::where('user_id', $user->id)
+        $contacts = XeroContact::where('user_id', $user->id)
             ->orderByDesc('id')
             ->limit(5)
             ->get(['name', 'email'])
@@ -129,7 +132,7 @@ class XeroController extends Controller
                 ];
             });
 
-        $bankAccounts = \App\Models\XeroBankAccount::where('user_id', $user->id)
+        $bankAccounts = XeroBankAccount::where('user_id', $user->id)
             ->get(['name', 'balance'])
             ->map(function ($b) {
                 return [
@@ -165,7 +168,7 @@ class XeroController extends Controller
     {
         $tenants = session('xero_tenants', []);
         if (empty($tenants)) {
-            dd('No tenants found in session. Please log in to Xero first.');
+            return redirect('/dashboard')->with('error', 'No tenants found.');
         }
         return Inertia::render('xero/select-tenant', [
             'tenants' => $tenants,
@@ -181,7 +184,7 @@ class XeroController extends Controller
             return redirect('/dashboard')->with('error', 'Invalid tenant selection.');
         }
         // Save the selected tenant to the user's XeroToken
-        \App\Models\XeroToken::updateOrCreate(
+        XeroToken::updateOrCreate(
             ['user_id' => $userId],
             [
                 'access_token' => $tokenData['access_token'],
@@ -194,8 +197,8 @@ class XeroController extends Controller
         // Clean up session
         session()->forget(['xero_tenants', 'xero_token_data', 'xero_user_id']);
         // Sync Xero data after tenant selection
-        $user = \App\Models\User::find($userId);
-        app(\App\Services\Xero\DataSyncService::class)->sync($user, $user->xeroToken);
+        $user = User::find($userId);
+        app(DataSyncService::class)->sync($user, $user->xeroToken);
         return redirect('/dashboard')->with('success', 'Tenant selected and data synced!');
     }
 }

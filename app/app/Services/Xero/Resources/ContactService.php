@@ -4,6 +4,7 @@ namespace App\Services\Xero\Resources;
 
 use App\Services\Xero\TokenManager;
 use App\Services\Xero\XeroClient;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 
@@ -15,12 +16,18 @@ class ContactService
     protected TokenManager $tokens;
 
     /**
+     * @var LoggerInterface
+     */
+    protected LoggerInterface $logger;
+
+    /**
      * ContactService constructor.
      * @param TokenManager $tokens
      */
-    public function __construct(TokenManager $tokens)
+    public function __construct(TokenManager $tokens, LoggerInterface $logger)
     {
         $this->tokens = $tokens;
+        $this->logger = $logger;
     }
 
     /**
@@ -60,7 +67,7 @@ class ContactService
             return array_slice($response?->getContacts() ?? [], 0, $limit);
         } catch (Throwable $e) {
             // Log any errors encountered during API call
-            logger()->warning("Xero: Failed to fetch contacts", [
+            $this->logger->warning("Xero: Failed to fetch contacts", [
                 'error' => $e->getMessage(),
             ]);
 

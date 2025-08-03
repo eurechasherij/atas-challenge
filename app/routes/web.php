@@ -8,14 +8,7 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-// Route::middleware(['auth', 'verified'])->group(function () {
-//     Route::get('dashboard', function () {
-//         return Inertia::render('dashboard');
-//     })->name('dashboard');
-// });
-
-
-// Xero login route (overrides default login)
+// Xero login route
 Route::get('/login', [XeroController::class, 'redirectToXero'])->name('login');
 Route::get('/xero/callback', [XeroController::class, 'handleCallback']);
 
@@ -25,9 +18,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // Xero tenant selection
-Route::get('/xero/select-tenant', [\App\Http\Controllers\XeroController::class, 'selectTenantPage']);
-Route::post('/xero/select-tenant', [\App\Http\Controllers\XeroController::class, 'selectTenant']);
+Route::get('/xero/select-tenant', [XeroController::class, 'selectTenantPage']);
+Route::post('/xero/select-tenant', [XeroController::class, 'selectTenant']);
 
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

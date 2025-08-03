@@ -4,6 +4,7 @@ namespace App\Services\Xero\Resources;
 
 use App\Services\Xero\TokenManager;
 use App\Services\Xero\XeroClient;
+use Psr\Log\LoggerInterface;
 use Throwable;
 use XeroAPI\XeroPHP\Models\Accounting\Invoice;
 
@@ -16,12 +17,18 @@ class InvoiceService
     protected TokenManager $tokens;
 
     /**
+     * @var LoggerInterface
+     */
+    protected LoggerInterface $logger;
+
+    /**
      * InvoiceService constructor.
      * @param TokenManager $tokens
      */
-    public function __construct(TokenManager $tokens)
+    public function __construct(TokenManager $tokens, LoggerInterface $logger)
     {
         $this->tokens = $tokens;
+        $this->logger = $logger;
     }
 
     /**
@@ -61,7 +68,7 @@ class InvoiceService
             );
             return array_slice($response?->getInvoices() ?? [], 0, $limit);
         } catch (Throwable $e) {
-            logger()->warning("Xero: Failed to fetch invoices", ['error' => $e->getMessage()]);
+            $this->logger->warning("Xero: Failed to fetch invoices", ['error' => $e->getMessage()]);
             return [];
         }
     }

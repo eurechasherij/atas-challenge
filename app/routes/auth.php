@@ -16,6 +16,7 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
+    // Disabled because we are using Xero OAuth2 for authentication
     // Route::get('login', [AuthenticatedSessionController::class, 'create'])
     //     ->name('login');
 

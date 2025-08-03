@@ -10,6 +10,7 @@ services:
     build_as_root:
       - curl -sL https://deb.nodesource.com/setup_22.x | bash -
       - apt-get install -y nodejs
+      - npm run install && npm run build
 tooling:
   node:
     service: node

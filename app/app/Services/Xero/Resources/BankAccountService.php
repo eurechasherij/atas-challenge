@@ -4,6 +4,7 @@ namespace App\Services\Xero\Resources;
 
 use App\Services\Xero\TokenManager;
 use App\Services\Xero\XeroClient;
+use Psr\Log\LoggerInterface;
 use Throwable;
 use XeroAPI\XeroPHP\Models\Accounting\Account;
 
@@ -16,12 +17,18 @@ class BankAccountService
     protected TokenManager $tokens;
 
     /**
+     * @var LoggerInterface
+     */
+    protected LoggerInterface $logger;
+
+    /**
      * BankAccountService constructor.
      * @param TokenManager $tokens
      */
-    public function __construct(TokenManager $tokens)
+    public function __construct(TokenManager $tokens, LoggerInterface $logger)
     {
         $this->tokens = $tokens;
+        $this->logger = $logger;
     }
 
     /**
@@ -48,7 +55,7 @@ class BankAccountService
                 'Type=="' . Account::BANK_ACCOUNT_TYPE_BANK . '"'
             )?->getAccounts() ?? [];
         } catch (Throwable $e) {
-            logger()->warning("Xero: Failed to fetch bank accounts", ['error' => $e->getMessage()]);
+            $this->logger->warning("Xero: Failed to fetch bank accounts", ['error' => $e->getMessage()]);
         }
 
         $balances = $this->getBankBalances($api, $token->tenant_id);
@@ -95,7 +102,7 @@ class BankAccountService
                 }
             }
         } catch (Throwable $e) {
-            logger()->warning("Xero: Failed to fetch bank balances", ['error' => $e->getMessage()]);
+            $this->logger->warning("Xero: Failed to fetch bank balances", ['error' => $e->getMessage()]);
         }
 
         return $balances;
