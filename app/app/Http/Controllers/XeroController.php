@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Auth;
 
 class XeroController extends Controller
 {
+    /**
+     * Redirect to Xero for authorization
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function redirectToXero()
     {
         $query = http_build_query([
@@ -29,6 +33,12 @@ class XeroController extends Controller
         return redirect("https://login.xero.com/identity/connect/authorize?$query");
     }
 
+    /**
+     * Handle the callback from Xero after user authorizes
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
     public function handleCallback(Request $request)
     {
         $response = Http::asForm()->post('https://identity.xero.com/connect/token', [
@@ -98,6 +108,11 @@ class XeroController extends Controller
         return redirect('/dashboard')->with('success', 'Logged in with Xero!');
     }
 
+    /**
+     * Show the dashboard with Xero data
+     * @param OrganisationService $service
+     * @return \Inertia\Response
+     */
     public function dashboard(OrganisationService $service)
     {
         $user = Auth::user();
@@ -149,7 +164,6 @@ class XeroController extends Controller
         ]);
     }
 
-
     /**
      * Fetch and persist Xero data for the authenticated user
      */
@@ -164,6 +178,10 @@ class XeroController extends Controller
         return redirect()->back()->with('success', 'Xero data synced!');
     }
 
+    /**
+     * Show the tenant selection page
+     * @return \Inertia\Response
+     */
     public function selectTenantPage()
     {
         $tenants = session('xero_tenants', []);
@@ -175,6 +193,11 @@ class XeroController extends Controller
         ]);
     }
 
+    /**
+     * Handle tenant selection and save to user's XeroToken
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function selectTenant(Request $request)
     {
         $tenantId = $request->input('tenantId');

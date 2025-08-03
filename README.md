@@ -1,6 +1,6 @@
 # Xero Dashboard Integration – Laravel + Inertia + React
 
-This app is a simple yet robust demonstration of integrating with the [Xero API](https://developer.xero.com/) using **Laravel 10**, **Inertia.js**, and **React**. It authenticates users via OAuth 2.0 and presents selected accounting data in a responsive dashboard.
+This app is a simple yet robust demonstration of integrating with the [Xero API](https://developer.xero.com/) using **Laravel 12**, **Inertia.js**, and **React**. It authenticates users via OAuth 2.0 and presents selected accounting data in a responsive dashboard.
 
 ## Stack
 
