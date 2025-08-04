@@ -55,7 +55,10 @@ class XeroController extends Controller
             throw new \Exception('Missing id_token from Xero response');
         }
 
-        // Decode the JWT safely
+        // TODO: Decode the JWT safely
+        // TODO: MVP - JWT verification should be implemented for production
+        // Currently parsing JWT without signature verification for demo purposes
+        // In production, use proper JWT library with signature verification
         $segments = explode('.', $data['id_token']);
         $payload = json_decode(base64_decode(strtr($segments[1], '-_', '+/')), true);
 
